@@ -1,0 +1,55 @@
+---
+title: "2AM Database++ Projects: Structure and Configuration"
+sidebarTitle: "Projects"
+description: "A project is the top-level unit in 2AM Database++ — it groups your migrations, scripts, environments, and database configuration in one place."
+---
+
+A project is the central organizing unit in 2AM Database++. It bundles everything needed to manage schema changes for a single database: your migration files, ad-hoc scripts, environment connections, and shared configuration. Whether you're working solo on a local dev database or coordinating schema changes across a team's staging and production environments, a project keeps it all in one coherent place.
+
+## Project Structure
+
+Run `2am-smt init` in any directory to scaffold a new project. The command creates the following structure:
+
+```
+.
+├── configuration.yml
+├── README.md
+├── .gitignore
+├── migrations/
+│   ├── down/
+│   └── up/
+├── package.json
+└── scripts/
+```
+
+- **`configuration.yml`** — The single source of truth for your project settings and environment credentials.
+- **`migrations/up/`** — Forward migration SQL files that apply schema changes.
+- **`migrations/down/`** — Rollback SQL files that reverse those changes.
+- **`scripts/`** — Ad-hoc SQL files for maintenance, backfills, and one-off tasks.
+- **`.gitignore`** — Pre-configured to exclude sensitive files such as `.env` from version control.
+
+## Key Project Settings
+
+When you create or configure a project, you define the following settings in `configuration.yml`:
+
+| Setting | Description |
+|---|---|
+| **Name** | A human-readable display name for the project. |
+| **Identifier** | A unique slug used to identify this project's records in the tracking table. Must be unique across all projects sharing the same database. |
+| **Tracking Table** | The name of the database table that records which migrations have been applied. Defaults to `_migrations`. |
+| **Database Type** | The target database engine (e.g., PostgreSQL, MySQL). |
+| **Description** | An optional free-text description of the project's purpose. |
+
+## Multi-Project Support
+
+Multiple projects can connect to the same database server — even the same database — without colliding. Each project is identified by its **Identifier** field, which is stored alongside every migration record in the tracking table. This means two projects can apply their own independent sets of migrations to the same database, and the tool will correctly track them separately.
+
+This pattern is especially useful in **microservices architectures**, where each service owns its own schema but all services share a single database instance. Give each service's project a distinct Identifier, and 2AM Database++ handles the rest.
+
+## Importing an Existing Project
+
+If you already have a project initialized elsewhere — for example, a repository cloned from version control — you can open it in the desktop app without re-running `init`. Use **File → Open Project** (or the equivalent import option in your OS) and point the app to the directory containing `configuration.yml`. The app reads all settings, environments, and migration history directly from that file.
+
+<Warning>
+  **Do not change the Identifier after migrations have been applied.** The Identifier is the key that links tracking records in the database to your project. Changing it causes the tool to lose track of all previously applied migrations, which can lead to duplicate execution or failed rollbacks. If you must rename a project's Identifier, update the tracking table records in every affected database first.
+</Warning>

@@ -1,0 +1,111 @@
+---
+title: "Write Database Migration Files with 2AM Database++"
+sidebarTitle: "Write Migrations"
+description: "Create versioned up and down SQL migration files, configure single-transaction mode, and add dynamic replacements for environment-specific values."
+---
+
+Migrations in 2AM Database++ are plain `.sql` files stored in `migrations/up/` and `migrations/down/`. Every migration gets a UTC timestamp prefix so the tool always applies them in the correct order. Because there is no ORM or custom DSL, you write standard SQL that you can open, read, and run in any database client — the tool just orchestrates when and where each file is executed.
+
+<Steps>
+  <Step title="Create a new migration file">
+    Run `migrate:new` and pass a short, descriptive name in snake_case:
+
+    ```bash
+    2am-smt migrate:new add_users_table
+    ```
+
+    The tool creates two files — one for the forward migration and one for the rollback:
+
+    ```
+    migrations/up/20240315093045_add_users_table.sql
+    migrations/down/20240315093045_add_users_table.sql
+    ```
+
+    Both files share the same timestamp prefix so they are always paired correctly. The `up/` file starts with a placeholder comment; the `down/` file does too.
+  </Step>
+
+  <Step title="Write the up migration">
+    Open `migrations/up/20240315093045_add_users_table.sql` and replace the placeholder with your forward schema change:
+
+    ```sql
+    CREATE TABLE users (
+        id          SERIAL PRIMARY KEY,
+        email       VARCHAR(255) NOT NULL UNIQUE,
+        full_name   VARCHAR(255) NOT NULL,
+        created_at  TIMESTAMPTZ  NOT NULL DEFAULT NOW(),
+        updated_at  TIMESTAMPTZ  NOT NULL DEFAULT NOW()
+    );
+
+    CREATE INDEX idx_users_email ON users (email);
+    ```
+
+    Write exactly the SQL you would run to move the schema forward — `CREATE TABLE`, `ALTER TABLE`, `CREATE INDEX`, and so on.
+  </Step>
+
+  <Step title="Write the down migration">
+    Open `migrations/down/20240315093045_add_users_table.sql` and write the exact inverse of your up migration:
+
+    ```sql
+    DROP TABLE IF EXISTS users;
+    ```
+
+    The down migration must leave the database in the same state it was in *before* the up migration ran. Keep it focused: drop only what the paired up migration created.
+  </Step>
+
+  <Step title="Add dynamic replacements (optional)">
+    Dynamic replacements let you inject environment-specific values into your SQL at run time without duplicating migration files. You define a **From** string (a placeholder) and a **To** string (the actual value) per environment in `configuration.yml`:
+
+    ```yaml
+    environments:
+      local:
+        credentialType: dotenv
+        dotenvFile: .env
+        host: DB_HOST
+        port: DB_PORT
+        database: DB_NAME
+        username: DB_USER
+        password: DB_PASSWORD
+        replacements:
+          - from: "{{SCHEMA}}"
+            to: "public"
+      production:
+        credentialType: awsSecretsManager
+        secretId: prod/myapp/db
+        replacements:
+          - from: "{{SCHEMA}}"
+            to: "prod_schema"
+    ```
+
+    In your SQL files, use the placeholder anywhere you need the environment-specific value:
+
+    ```sql
+    CREATE TABLE {{SCHEMA}}.users (
+        id        SERIAL PRIMARY KEY,
+        email     VARCHAR(255) NOT NULL UNIQUE
+    );
+    ```
+
+    Before executing the file, the tool replaces every occurrence of `{{SCHEMA}}` with the value defined for the target environment. Replacements work in both migration files and script files.
+  </Step>
+</Steps>
+
+## Migration settings
+
+Each migration can be configured with the following settings, either through the desktop app's migration editor or by adding a metadata comment block at the top of the SQL file:
+
+| Setting | Description |
+|---|---|
+| **Name** | The human-readable label derived from the filename (e.g. `add_users_table`) |
+| **Description** | Optional free-text notes explaining the purpose of the migration |
+| **Single Transaction** | When enabled, the entire migration runs inside a single database transaction. If any statement fails, the whole migration is rolled back automatically. Recommended for most schema changes. |
+| **No Down Migration** | Marks the migration as intentionally irreversible. The tool will skip generating or requiring a down file. Use only for changes that truly cannot be undone (e.g. destructive data purges). |
+
+<Tip>
+  Always write a down migration during active development — even if you never expect to roll back in production. Having a down migration makes it trivial to iterate locally: apply, test, revert, adjust, repeat. The cost of writing `DROP TABLE` or `ALTER TABLE ... DROP COLUMN` is negligible compared to the safety net it provides.
+</Tip>
+
+<Warning>
+  If you mark a migration as **No Down Migration**, you cannot roll back past it using `migrate:to`. Any rollback attempt that would need to pass through that migration will stop and report an error. Make sure the change is genuinely irreversible — or accepted as permanent — before enabling this setting in a shared or production environment.
+</Warning>
+
+Migration files are standard SQL and have no special syntax beyond the optional dynamic replacement placeholders. You can open any file in your preferred database client and execute it manually if you ever need to debug or inspect the SQL in isolation.

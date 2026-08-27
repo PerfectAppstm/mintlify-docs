@@ -1,0 +1,144 @@
+---
+title: "Apply and Revert SQL Migrations with 2AM Database++"
+sidebarTitle: "Run Migrations"
+description: "Apply pending migrations, roll back to a prior state, or check status using the 2AM Database++ desktop app or the migrate:to CLI command."
+---
+
+Once your migration files are written, 2AM Database++ compares them against the tracking table in your target database and determines which migrations are pending. You can apply all pending migrations at once, advance to a specific migration, or roll back to an earlier state — all with a single command or a few clicks in the desktop app.
+
+<Info>
+  On the very first run against a database, the tool automatically creates its tracking table (configured as `trackingTable` in `configuration.yml`, e.g. `_smt_migrations`). You do not need to create it manually. The table records the identifier, name, and timestamp of every applied migration.
+</Info>
+
+<Tabs>
+  <Tab title="CLI">
+    ### Apply all pending migrations
+
+    Run all migrations that have not yet been applied to the target environment:
+
+    ```bash
+    2am-smt migrate:to local
+    ```
+
+    The tool lists the pending migrations and asks you to confirm before executing. Example output:
+
+    ```
+    Connecting to local...  ✓
+    Pending migrations (3):
+      → 20240301080000_create_roles_table
+      → 20240310142200_add_permissions_table
+      → 20240315093045_add_users_table
+
+    Apply these 3 migration(s)? [y/N]: y
+
+    Applying 20240301080000_create_roles_table...   ✓
+    Applying 20240310142200_add_permissions_table... ✓
+    Applying 20240315093045_add_users_table...       ✓
+
+    Done. 3 migration(s) applied.
+    ```
+
+    ### Apply up to a specific migration
+
+    Pass a migration name as the second argument to advance the database to exactly that migration and no further:
+
+    ```bash
+    2am-smt migrate:to local 20240310142200_add_permissions_table
+    ```
+
+    Only migrations up to and including the named one are applied (or reverted, if it is earlier than the current state).
+
+    ### Skip the confirmation prompt
+
+    Add the `-a` flag to apply without being asked to confirm — useful in scripts and automation:
+
+    ```bash
+    2am-smt migrate:to local -a
+    ```
+
+    ### Apply a fixed number of migrations
+
+    Use `-c` followed by a positive integer to apply exactly that many pending migrations:
+
+    ```bash
+    2am-smt migrate:to local -c 3
+    ```
+
+    ### Roll back migrations
+
+    Pass a negative integer to `-c` to revert that many applied migrations in reverse order:
+
+    ```bash
+    2am-smt migrate:to local -c -1
+    ```
+
+    This reverts the most recently applied migration by running its corresponding `down/` file.
+
+    ### Check migration status
+
+    Print a summary of applied vs pending migrations for an environment:
+
+    ```bash
+    2am-smt status local
+    ```
+
+    Example output:
+
+    ```
+    Environment : local
+    Database    : myapp_dev (localhost:5432)
+    Applied     : 2
+    Pending     : 1
+    ```
+
+    To see the full list of migrations with their individual status:
+
+    ```bash
+    2am-smt status local -l
+    ```
+
+    Example output:
+
+    ```
+    Environment : local
+    Database    : myapp_dev (localhost:5432)
+
+    ✓  20240301080000_create_roles_table
+    ✓  20240310142200_add_permissions_table
+    ?  20240315093045_add_users_table
+
+    Applied: 2  |  Pending: 1
+    ```
+  </Tab>
+
+  <Tab title="Desktop App">
+    ### Connect to an environment
+
+    Open your project in 2AM Database++, select the target environment from the environment selector, and click **Connect**. The app reads your credentials, establishes a connection, and loads the current migration state from the tracking table.
+
+    ### Review the migrations list
+
+    The migrations panel displays every migration in chronological order with a status icon:
+
+    | Icon | Meaning |
+    |---|---|
+    | ✓ | Applied — this migration has been run on the connected database |
+    | ? | Pending — this migration exists on disk but has not been applied yet |
+
+    ### Apply pending migrations
+
+    Click the last migration in the list (or any migration you want to advance to) to set it as the target state. The app highlights all migrations that will be affected. Click **Apply Actions** to execute them.
+
+    The app shows a progress log as each migration runs and confirms when the operation is complete.
+
+    ### Revert migrations
+
+    To roll back, click a migration that is *earlier* than the last applied migration. The app highlights the migrations that will be reverted in reverse order. Click **Apply Actions** to run the corresponding `down/` files.
+
+    The desktop app will not let you proceed past an irreversible migration — see the warning below.
+  </Tab>
+</Tabs>
+
+<Warning>
+  **Irreversible migrations block rollbacks.** If any migration in the rollback path is marked **No Down Migration**, the tool stops at that migration and reports an error. You cannot automatically revert schema changes beyond that point. Plan destructive or permanent changes carefully, and communicate them to your team before applying them to shared environments.
+</Warning>

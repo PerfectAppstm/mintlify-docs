@@ -1,0 +1,63 @@
+---
+title: "2AM Database++: SQL Schema Migration Tool for Developers"
+sidebarTitle: "Home"
+description: "Manage database schema changes with plain SQL files, multi-environment support, and seamless CI/CD integration — no ORM or DSL required."
+---
+
+2AM Database++ is a cross-platform desktop application and CLI utility for managing database schema migrations using plain `.sql` files. No ORM, no DSL, no magic — just SQL you write, version-control, and deploy with confidence across every environment in your pipeline.
+
+<CardGroup cols={2}>
+  <Card title="Introduction" icon="book-open" href="/introduction">
+    Learn what 2AM Database++ is, why plain SQL matters, and how the tool fits into your workflow.
+  </Card>
+  <Card title="Quickstart" icon="rocket" href="/quickstart">
+    Install the CLI, create your first migration, and apply it to your database in under 5 minutes.
+  </Card>
+  <Card title="CLI Reference" icon="terminal" href="/cli/overview">
+    Explore every command available in the `@2amtech/sql-migration-tool` CLI with flags and examples.
+  </Card>
+  <Card title="CI/CD Guide" icon="gear" href="/guides/cicd">
+    Automate schema deployments in GitHub Actions, GitLab CI, and other pipelines.
+  </Card>
+</CardGroup>
+
+## Get up and running
+
+Follow these four steps to go from zero to your first successful migration deployment.
+
+<Steps>
+  <Step title="Install the CLI">
+    Install the `@2amtech/sql-migration-tool` package globally via npm so the `2am-smt` command is available anywhere on your machine.
+
+    ```bash
+    npm install -g @2amtech/sql-migration-tool
+    ```
+  </Step>
+  <Step title="Initialize a project">
+    Run `2am-smt init` inside your project directory to scaffold the migration folder structure and a starter `configuration.yml` file.
+
+    ```bash
+    2am-smt init
+    ```
+
+    The command creates `configuration.yml`, `migrations/up/`, `migrations/down/`, and `scripts/` ready for your first migration.
+  </Step>
+  <Step title="Write a migration">
+    Generate a timestamped migration file pair and add your DDL statements to the `up` and `down` scripts.
+
+    ```bash
+    2am-smt migrate:new create_users_table
+    ```
+
+    Open the generated files under `migrations/up/` and `migrations/down/` and write your schema changes in plain SQL.
+  </Step>
+  <Step title="Deploy">
+    Apply all pending migrations to your target environment. The tool tracks which migrations have already run so only new ones are executed.
+
+    ```bash
+    2am-smt migrate:to local
+    ```
+
+    Replace `local` with any environment name defined in your `configuration.yml` — for example `staging` or `production`.
+  </Step>
+</Steps>

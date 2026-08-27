@@ -1,0 +1,155 @@
+---
+title: "configuration.yml File Reference for 2AM Database++"
+sidebarTitle: "Configuration File"
+description: "Full reference for the configuration.yml file — project identity, database type, environment blocks, and dynamic replacement settings."
+---
+
+`configuration.yml` is the single source of truth for every 2AM Database++ project. It defines what your project is called, which database engine it targets, how each environment connects to that database, and how dynamic replacement values are resolved at migration time. You place this file in the root of your project directory, and both the desktop application and the `2am-smt` CLI read it automatically whenever you run a command.
+
+## Complete example
+
+The snippet below shows a realistic `configuration.yml` with two environments: a **local** environment that reads credentials from a `.env` file, and a **staging** environment that pulls credentials from AWS Secrets Manager. Use it as a starting point and remove any sections that do not apply to your project.
+
+```yaml
+# Human-readable name shown in the desktop application and CLI output.
+name: Acme Billing Service
+
+# Unique slug used to identify this project in the tracking table.
+# Must be unique across all projects that share the same database server.
+identifier: acme-billing
+
+# Name of the table that records which migrations have been applied.
+trackingTable: _schema_migrations
+
+# Target database engine. Accepted values: mysql, postgresql, mssql
+databaseType: postgresql
+
+# Optional free-text description of the project.
+description: >
+  Manages the billing database schema for the Acme platform.
+
+environments:
+  # ── Local development ────────────────────────────────────────────────────────
+  - name: local
+    credentialType: dotenv
+    dotenvFileName: .env
+    usernameKey: DB_USER
+    passwordKey: DB_PASSWORD
+    hostKey: DB_HOST
+    databaseKey: DB_NAME
+    portKey: DB_PORT
+
+    # Dynamic replacements applied when running migrations in this environment.
+    replacements:
+      - placeholder: "{{schema}}"
+        value: public
+      - placeholder: "{{tablePrefix}}"
+        value: dev_
+
+  # ── Staging ──────────────────────────────────────────────────────────────────
+  - name: staging
+    credentialType: awsSecretsManager
+    path: staging/acme-billing/database
+    region: us-east-1
+    usernameKey: username
+    passwordKey: password
+    hostKey: host
+    databaseKey: dbname
+    portKey: port
+    sslKey: ssl
+    sslVerifyPeerKey: sslVerifyPeer
+
+    replacements:
+      - placeholder: "{{schema}}"
+        value: billing
+      - placeholder: "{{tablePrefix}}"
+        value: ""
+```
+
+---
+
+## Top-level fields
+
+<ParamField body="name" type="string" required>
+  A human-readable display name for the project. This value appears in the 2AM Database++ desktop application title bar and in CLI output. It does not affect database behaviour.
+</ParamField>
+
+<ParamField body="identifier" type="string" required>
+  A unique slug that 2AM Database++ writes into the migration tracking table to distinguish this project's migrations from those of other projects on the same database server. Use lowercase letters, numbers, and hyphens (e.g. `acme-billing`).
+
+  <Warning>
+    Changing `identifier` after you have already applied migrations will cause 2AM Database++ to lose track of which migrations have run. The tool will treat all existing migrations as unapplied and attempt to run them again, which can corrupt your schema. If you must rename the identifier, update the value in the tracking table manually before running any further migrations.
+  </Warning>
+</ParamField>
+
+<ParamField body="trackingTable" type="string" required>
+  The name of the database table that records every applied migration. 2AM Database++ creates this table automatically on first run if it does not already exist. Choose a name that is unlikely to conflict with your application tables (e.g. `_migrations`, `_schema_migrations`).
+</ParamField>
+
+<ParamField body="databaseType" type="string" required>
+  The database engine for this project. Accepted values are:
+
+  | Value | Engine |
+  |---|---|
+  | `mysql` | MySQL or MariaDB |
+  | `postgresql` | PostgreSQL |
+  | `mssql` | Microsoft SQL Server |
+</ParamField>
+
+<ParamField body="description" type="string">
+  An optional free-text description of the project. Use this field to document the purpose of the database or any conventions your team follows. It has no effect on tool behaviour.
+</ParamField>
+
+<ParamField body="environments" type="array" required>
+  A list of one or more environment blocks. Each environment represents a separate database connection — for example `local`, `staging`, and `production`. Every environment block must include a `name` and credential fields appropriate for the chosen `credentialType`.
+
+  See the [Credentials](/configuration/credentials) page for the full list of fields available inside each environment block.
+</ParamField>
+
+---
+
+## Environment `replacements`
+
+Each environment block can include an optional `replacements` list. Replacements let you embed environment-specific tokens in your `.sql` migration files and have the tool substitute real values before executing the SQL.
+
+```yaml
+environments:
+  - name: local
+    # ... credential fields ...
+    replacements:
+      - placeholder: "{{schema}}"
+        value: public
+      - placeholder: "{{tablePrefix}}"
+        value: dev_
+```
+
+<ParamField body="replacements[].placeholder" type="string">
+  The token string to search for in migration files. You can use any delimiter style that suits your SQL (e.g. `{{token}}`, `__TOKEN__`, `$(token)`).
+</ParamField>
+
+<ParamField body="replacements[].value" type="string">
+  The value that replaces every occurrence of `placeholder` before the SQL is sent to the database.
+</ParamField>
+
+---
+
+## Generated files
+
+When you run `2am-smt init` (or create a project through the desktop application), 2AM Database++ writes a `configuration.yml` pre-filled with your answers and a `.gitignore` in the project directory. The generated `.gitignore` ensures that sensitive files are not accidentally committed:
+
+```bash
+# .gitignore created by 2am-smt init
+.env
+.env.*
+```
+
+<Tip>
+  Commit `configuration.yml` to version control so your entire team shares the same project structure and environment names. Add your `.env` files to `.gitignore` so that the secrets they contain stay off the remote repository.
+</Tip>
+
+---
+
+## Cross-references
+
+- **Credential fields** — For the full list of fields available inside each environment block (including SSL options for all credential types), see the [Credentials](/configuration/credentials) page.
+- **CLI init command** — To scaffold a new project with a `configuration.yml` from the command line, see [`2am-smt init`](/cli/init).

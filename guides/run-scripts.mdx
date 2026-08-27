@@ -1,0 +1,64 @@
+---
+title: "Run Ad-Hoc SQL Scripts for Maintenance and Data Tasks"
+sidebarTitle: "Run Scripts"
+description: "Execute ad-hoc SQL scripts for maintenance and data tasks against any environment using the 2AM Database++ desktop app or CLI commands."
+---
+
+Scripts are ad-hoc SQL files stored in the `scripts/` directory. Unlike migrations, scripts are not version-controlled in the tracking table — they are designed for one-off or recurring maintenance tasks such as backfilling data, purging stale records, or refreshing materialised views. You can run the same script against multiple environments and control exactly when each execution happens.
+
+<Steps>
+  <Step title="Create a new script file">
+    Run `script:new` with a descriptive name in snake_case:
+
+    ```bash
+    2am-smt script:new backfill_user_emails
+    ```
+
+    The tool creates a new file in the `scripts/` directory:
+
+    ```
+    scripts/backfill_user_emails.sql
+    ```
+
+    Unlike migration files, script names do not receive a timestamp prefix — scripts are identified by name alone.
+  </Step>
+
+  <Step title="Write the script SQL">
+    Open `scripts/backfill_user_emails.sql` and write your SQL. The following example populates a `normalized_email` column from an existing `email` column:
+
+    ```sql
+    -- Backfill normalized_email for all existing users
+    UPDATE users
+    SET    normalized_email = LOWER(TRIM(email))
+    WHERE  normalized_email IS NULL
+      AND  email IS NOT NULL;
+    ```
+
+    Write the script to be as targeted as possible. If you intend to run it more than once, make the logic idempotent (i.e. safe to execute multiple times without unintended side effects) — for example, by filtering on `WHERE normalized_email IS NULL` as shown above.
+  </Step>
+
+  <Step title="Run the script against an environment">
+    Execute the script by passing the environment name and the script name (without the `.sql` extension):
+
+    ```bash
+    2am-smt script:run local backfill_user_emails
+    ```
+
+    The tool connects to the target environment, applies any configured [dynamic replacements](/concepts/dynamic-replacements), and executes the SQL. Output is printed to the terminal as the script runs.
+  </Step>
+</Steps>
+
+## Running scripts in the desktop app
+
+Switch to the **Scripts** tab in the 2AM Database++ sidebar. The panel lists all `.sql` files found in your project's `scripts/` directory.
+
+1. Select the script you want to run from the list.
+2. The editor pane shows the SQL with all dynamic replacements already applied for the currently connected environment — what you see is exactly what will be sent to the database.
+3. Select the target environment from the environment selector and click **Connect** if you are not already connected.
+4. Click **Run Script** to execute. The output log shows the result of each statement.
+
+<Warning>
+  **Scripts are not tracked.** The tool does not record when a script was run or whether it succeeded. Running the same script twice executes it twice against the database. Before running a script in a shared or production environment, verify that the logic is idempotent or that you intend to run it only once. If you need a one-time change to be tracked and revertible, write a migration instead.
+</Warning>
+
+Dynamic replacements work in scripts exactly the same way they work in migration files — any `{{PLACEHOLDER}}` in your SQL is substituted with the environment-specific value defined in `configuration.yml` before the script is executed. See the [Dynamic Replacements](/concepts/dynamic-replacements) concept page for full configuration details.

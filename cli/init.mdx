@@ -1,0 +1,55 @@
+---
+title: "Initialize a New Migration Project with 2am-smt init"
+sidebarTitle: "Init"
+description: "2am-smt init scaffolds a new migration project with configuration.yml, structured migration folders, and package.json for CI/CD use."
+---
+
+The `init` command scaffolds a new 2AM Database++ migration project in the directory of your choice. It creates a `configuration.yml` file where you define your database environments, a structured folder layout for migration and script files, and a `package.json` to support dependency management in CI/CD pipelines. Run `init` once per project before using any other `2am-smt` commands.
+
+## Usage
+
+```bash
+2am-smt init [options]
+```
+
+## Options
+
+<ParamField query="-d, --dir <path>" type="string">
+  Absolute path to the directory where the project should be initialized. If omitted, `init` uses the **current working directory**.
+</ParamField>
+
+## Examples
+
+Initialize a project in the current directory:
+
+```bash
+2am-smt init
+```
+
+Initialize a project in a specific directory:
+
+```bash
+2am-smt init --dir /home/user/projects/my-service
+```
+
+## Generated Project Structure
+
+After running `init`, the following files and folders are created in the target directory:
+
+```
+my-service/
+├── configuration.yml       # Environment and database connection settings
+├── README.md               # Getting-started guide for your team
+├── .gitignore              # Ignores local overrides and secrets
+├── package.json            # Node package manifest for CI/CD use
+├── migrations/
+│   ├── up/                 # Forward (apply) migration SQL files
+│   └── down/               # Reverse (rollback) migration SQL files
+└── scripts/                # Ad-hoc SQL scripts (not version-tracked)
+```
+
+The generated `configuration.yml` includes a commented template for defining environments. Open it and add your database connection details before running any other commands.
+
+<Tip>
+  Run `init` at the **root of your service or repository** so that migration files live alongside your application code. Commit all generated files — including `configuration.yml` (with secrets removed or replaced by environment variable references) — so your team shares a consistent project structure.
+</Tip>

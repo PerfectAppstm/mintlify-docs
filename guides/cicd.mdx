@@ -1,0 +1,124 @@
+---
+title: "Automate Database Migrations in Your CI/CD Pipeline"
+sidebarTitle: "CI/CD Integration"
+description: "Run 2AM Database++ migrations automatically in GitHub Actions, GitLab CI, Jenkins, or any Node.js CI/CD pipeline with two commands."
+---
+
+Every project created by 2AM Database++ includes a `package.json` pre-configured for CI/CD use. This means your pipeline does not need a globally installed CLI, a special Docker image, or any extra tooling — it only needs Node.js. Two commands are all it takes to install the tool and apply all pending migrations with no interactive prompts.
+
+## The two pipeline commands
+
+Add the following commands to any step in your pipeline that has access to your database:
+
+```bash
+npm install
+npm run migrate <env>
+```
+
+`npm install` reads `package.json` and installs `@2amtech/sql-migration-tool` as a local dependency. `npm run migrate <env>` is a pre-configured script that calls `2am-smt migrate:to <env> -a`, applying all pending migrations automatically without asking for confirmation.
+
+Replace `<env>` with the name of your target environment as defined in `configuration.yml` — for example, `staging` or `production`.
+
+## Pipeline examples
+
+<CodeGroup>
+
+```yaml GitHub Actions
+name: Deploy
+
+on:
+  push:
+    branches:
+      - main
+
+jobs:
+  migrate:
+    name: Run database migrations
+    runs-on: ubuntu-latest
+
+    steps:
+      - name: Checkout repository
+        uses: actions/checkout@v4
+
+      - name: Set up Node.js
+        uses: actions/setup-node@v4
+        with:
+          node-version: 20
+          cache: npm
+
+      - name: Install dependencies
+        working-directory: ./database
+        run: npm install
+
+      - name: Apply migrations
+        working-directory: ./database
+        run: npm run migrate production
+        env:
+          DB_HOST: ${{ secrets.DB_HOST }}
+          DB_PORT: ${{ secrets.DB_PORT }}
+          DB_NAME: ${{ secrets.DB_NAME }}
+          DB_USER: ${{ secrets.DB_USER }}
+          DB_PASSWORD: ${{ secrets.DB_PASSWORD }}
+```
+
+```yaml GitLab CI
+stages:
+  - migrate
+  - deploy
+
+migrate:production:
+  stage: migrate
+  image: node:20-alpine
+  before_script:
+    - cd database
+    - npm install
+  script:
+    - npm run migrate production
+  variables:
+    DB_HOST: $DB_HOST
+    DB_PORT: $DB_PORT
+    DB_NAME: $DB_NAME
+    DB_USER: $DB_USER
+    DB_PASSWORD: $DB_PASSWORD
+  only:
+    - main
+```
+
+```bash Shell / Generic
+#!/usr/bin/env bash
+set -euo pipefail
+
+# Navigate to your migration project directory
+cd database
+
+# Install the CLI
+npm install
+
+# Apply all pending migrations (no prompts)
+npm run migrate production
+```
+
+</CodeGroup>
+
+## Credential setup in pipelines
+
+Never hardcode database credentials in `configuration.yml` or commit them to your repository. Use one of the following approaches:
+
+- **Dotenv** — set the environment variables listed in your `.env` mapping as CI/CD secrets (e.g. GitHub Actions secrets, GitLab CI variables). The tool reads them from the process environment at run time.
+- **AWS Secrets Manager** — configure your pipeline's IAM role or service account with read access to the relevant secret. The tool fetches credentials at run time without any secrets stored in the repository.
+
+Both approaches keep credentials out of source control and give you a clear audit trail of who changed what and when.
+
+<Tip>
+  When running the CLI directly rather than through `npm run migrate`, add the `-a` flag to skip the confirmation prompt:
+
+  ```bash
+  2am-smt migrate:to production -a
+  ```
+
+  This is equivalent to what `npm run migrate production` does under the hood. Use it when you need more control over the command — for example, to target a specific migration with a name argument — while still running non-interactively in a pipeline.
+</Tip>
+
+<Note>
+  **Node.js LTS (18 or later) is recommended** for running 2AM Database++ in CI/CD. The `npm run migrate` script works correctly on any Node.js LTS release. If your pipeline uses Bun or Deno, both runtimes are also supported — replace `npm install` and `npm run` with the equivalent Bun or Deno commands as appropriate for your setup.
+</Note>

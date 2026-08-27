@@ -1,0 +1,89 @@
+---
+title: "Dynamic Replacements: Environment-Specific SQL Values"
+sidebarTitle: "Dynamic Replacements"
+description: "Dynamic replacements let you inject environment-specific values into SQL files at runtime — one file, cleanly adapted to each environment."
+---
+
+Writing SQL that behaves differently across environments usually means maintaining multiple copies of the same file — one for local, one for staging, one for production. Dynamic replacements eliminate that duplication. You write a single SQL file with named placeholders, then define per-environment substitution values in your project configuration. At execution time, 2AM Database++ replaces every placeholder with the correct value for the target environment before sending the SQL to the database.
+
+## How Dynamic Replacements Work
+
+A dynamic replacement is a **From / To pair** defined per environment. The `From` value is a text string that appears somewhere in your SQL file — typically wrapped in a distinctive delimiter like `{{` and `}}` to avoid accidental matches. The `To` value is what the tool substitutes in its place at runtime.
+
+You define these pairs either in the desktop app (per migration or script) or directly in `configuration.yml`. The substitution happens entirely in memory — your source SQL files are never modified on disk.
+
+### Example
+
+Suppose you have a migration that creates a table in a specific schema:
+
+```sql
+-- migrations/up/20240315090000_create_orders_table.sql
+
+CREATE TABLE {{SCHEMA_NAME}}.orders (
+  id         SERIAL PRIMARY KEY,
+  user_id    INT NOT NULL,
+  total      NUMERIC(10, 2) NOT NULL,
+  created_at TIMESTAMP NOT NULL DEFAULT NOW()
+);
+```
+
+In `configuration.yml`, you configure replacements for each environment:
+
+```yaml
+environments:
+  local:
+    credentialType: direct
+    host: localhost
+    port: 5432
+    database: myapp_dev
+    username: postgres
+    password: postgres
+    replacements:
+      - from: "{{SCHEMA_NAME}}"
+        to: "app_local"
+
+  production:
+    credentialType: aws
+    secretId: myapp/production/db
+    region: us-east-1
+    replacements:
+      - from: "{{SCHEMA_NAME}}"
+        to: "app_prod"
+```
+
+When you apply this migration to `local`, the tool executes:
+
+```sql
+CREATE TABLE app_local.orders ( ... );
+```
+
+When you apply it to `production`, the tool executes:
+
+```sql
+CREATE TABLE app_prod.orders ( ... );
+```
+
+The same file, cleanly adapted — no duplication, no manual editing.
+
+## Use Cases
+
+Dynamic replacements are useful in any situation where a single SQL file needs to produce different output depending on the target environment:
+
+- **Different schema or table prefixes per environment** — keep environments isolated within the same database server
+- **Multi-tenant deployments** — inject a tenant-specific prefix so one migration set serves multiple tenants
+- **Environment-specific seed data** — insert different default values (admin email addresses, config flags, rate limits) per environment
+- **Feature flags or config values** — embed environment-specific constants directly into SQL without a separate config lookup
+
+## Where to Configure Replacements
+
+**Desktop app:** Select a migration or script, open the **Replacements** panel, and add `From` / `To` pairs for each environment. The app writes the values back to `configuration.yml` automatically.
+
+**`configuration.yml` directly:** Add a `replacements` list under the relevant environment block as shown in the example above. Each entry requires a `from` string and a `to` string.
+
+<Info>
+  Dynamic replacements work for both **migrations** and **scripts**. Any SQL file executed by 2AM Database++ — whether it is a versioned migration or an ad-hoc script — will have replacements applied before execution.
+</Info>
+
+<Warning>
+  When you open a migration or script in the desktop app's built-in editor and switch to the **Replacements** view, the editor enters **read-only mode**. This prevents you from accidentally editing the source SQL while configuring substitutions. Switch back to the editor view to make changes to the SQL file itself.
+</Warning>

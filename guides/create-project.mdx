@@ -1,0 +1,119 @@
+---
+title: "Create and Configure a 2AM Database++ Migration Project"
+sidebarTitle: "Create Project"
+description: "Set up a new 2AM Database++ project: configure environments, choose a credential type, and verify your database connection before migrating."
+---
+
+A 2AM Database++ project is a directory containing a `configuration.yml` file that defines your database environments and credentials, alongside the `migrations/` and `scripts/` folders that hold your SQL files. You can create a project in seconds using either the CLI or the desktop app — both produce the same structure on disk.
+
+<Tabs>
+  <Tab title="CLI">
+    <Steps>
+      <Step title="Run the init command">
+        Navigate to the directory where you want to create your project and run:
+
+        ```bash
+        2am-smt init
+        ```
+
+        To initialise the project in a specific directory instead, pass the `-d` flag:
+
+        ```bash
+        2am-smt init -d /path/to/my-project
+        ```
+
+        The command creates the project directory structure and writes a starter `configuration.yml`.
+      </Step>
+
+      <Step title="Configure your environments">
+        Open the generated `configuration.yml` and fill in your environment details. Below is a realistic example with a single `local` environment using dotenv credentials:
+
+        ```yaml
+        identifier: my-app-db
+        trackingTable: _smt_migrations
+        databaseType: postgresql
+        environments:
+          local:
+            credentialType: dotenv
+            dotenvFile: .env
+            host: DB_HOST
+            port: DB_PORT
+            database: DB_NAME
+            username: DB_USER
+            password: DB_PASSWORD
+        ```
+
+        Each key under `environments` is a named environment you can reference in CLI commands. The `credentialType: dotenv` setting tells the tool to read connection values from the `.env` file in your project root rather than storing them in plain text.
+      </Step>
+
+      <Step title="Test the connection">
+        Verify that the tool can reach your database before running any migrations:
+
+        ```bash
+        2am-smt connection:test local
+        ```
+
+        A successful test prints a confirmation message. If the connection fails, double-check the values in your `.env` file and ensure the database server is reachable from your machine.
+      </Step>
+    </Steps>
+  </Tab>
+
+  <Tab title="Desktop App">
+    <Steps>
+      <Step title="Open the New Project form">
+        Launch 2AM Database++ and click the **+** button in the project sidebar. The New Project form opens in the main panel.
+      </Step>
+
+      <Step title="Fill in the project details">
+        Complete the following fields:
+
+        | Field | Description |
+        |---|---|
+        | **Name** | A human-readable display name (e.g. `My App Database`) |
+        | **Identifier** | A unique slug used in the tracking table (e.g. `my-app-db`) |
+        | **Tracking Table** | The table the tool creates to record applied migrations (e.g. `_smt_migrations`) |
+        | **Database Type** | Your target database engine (PostgreSQL, MySQL, etc.) |
+        | **Description** | Optional notes about this project |
+      </Step>
+
+      <Step title="Add one or more environments">
+        Click **Add Environment** and configure each environment:
+
+        - **Name** — a label such as `local`, `staging`, or `production`
+        - **Credential Type** — choose from **Direct** (hardcoded values), **Dotenv** (reads from a `.env` file), or **AWS Secrets Manager**
+
+        Fill in the corresponding connection fields (host, port, database name, username, password) according to the credential type you selected. Repeat for as many environments as your project needs.
+      </Step>
+
+      <Step title="Save the project">
+        Click **Save**. The desktop app prompts you to choose a directory. Select the folder where you want the project to live — the tool writes `configuration.yml` there and creates the full directory structure.
+      </Step>
+
+      <Step title="Project structure is ready">
+        Once saved, 2AM Database++ opens the project and displays the newly created file tree. You are ready to start writing migrations.
+      </Step>
+    </Steps>
+  </Tab>
+</Tabs>
+
+## Generated project structure
+
+After initialisation — regardless of whether you used the CLI or the desktop app — your project directory looks like this:
+
+```
+my-app-db/
+├── configuration.yml       # Environment and credential configuration
+├── package.json            # Pre-configured for CI/CD (npm run migrate)
+├── migrations/
+│   ├── up/                 # Forward migration SQL files
+│   └── down/               # Rollback migration SQL files
+└── scripts/                # Ad-hoc SQL scripts
+```
+
+<Warning>
+  **Do not change the `identifier` value after you have applied migrations to any environment.** The identifier is embedded in the tracking table name. Changing it causes the tool to lose track of which migrations have already been applied and may result in duplicate or skipped migrations.
+</Warning>
+
+<Tip>
+  Use **dotenv credentials** for local development — your `.env` file stays out of version control and each developer can point to their own database instance. For staging and production environments, **AWS Secrets Manager** is the recommended credential type: secrets are centralised, audited, and never stored on disk or in your repository.
+</Tip>

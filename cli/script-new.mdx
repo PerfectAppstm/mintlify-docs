@@ -1,0 +1,60 @@
+---
+title: "Create a New SQL Script File with 2am-smt script:new"
+sidebarTitle: "Script New"
+description: "2am-smt script:new creates a new named SQL script template in your project's scripts/ folder, ready for ad-hoc or maintenance operations."
+---
+
+The `script:new` command creates a new SQL script file in your project's `scripts/` folder. Scripts are intended for one-off or maintenance operations — such as backfilling data, fixing records, or running reports — that don't belong in your versioned migration history. Run this command to generate a named script template, then edit the file with the SQL you want to execute.
+
+## Usage
+
+```bash
+2am-smt script:new <scriptName> [options]
+```
+
+## Arguments
+
+<ParamField path="scriptName" type="string" required>
+  A descriptive name for the script file (e.g. `backfill_user_emails`, `cleanup_orphaned_records`). The name becomes the filename in the `scripts/` directory. Snake_case is recommended for consistency.
+</ParamField>
+
+## Options
+
+<ParamField query="-p, --project <path>" type="string">
+  Path to the `configuration.yml` file for your project. Defaults to `./configuration.yml` in the current working directory.
+</ParamField>
+
+## Example
+
+Create a new script for backfilling user email addresses:
+
+```bash
+2am-smt script:new backfill_user_emails
+```
+
+## Generated File
+
+The command creates the following file in your project:
+
+```
+scripts/
+└── backfill_user_emails.sql
+```
+
+**`scripts/backfill_user_emails.sql`** — starter template:
+
+```sql
+-- Script: backfill_user_emails
+-- Created: 2024-01-03 15:00:00 UTC
+--
+-- Write your SQL below.
+-- Scripts are not version-tracked and can be run multiple times.
+-- Ensure your SQL is idempotent if you intend to run it more than once.
+
+```
+
+Open the file and replace the placeholder comment with your SQL before running it with [`script:run`](/cli/script-run).
+
+<Note>
+  Scripts are **not version-tracked** in the migration history table. They are free-form SQL files intended for operational tasks. If your SQL changes the database schema — for example, adding a column or creating a table — use [`migrate:new`](/cli/migrate-new) instead so the change is tracked and reversible.
+</Note>

@@ -1,0 +1,72 @@
+---
+title: "Check Database Migration Status with 2am-smt status"
+sidebarTitle: "Status"
+description: "2am-smt status queries the target environment and reports the last applied migration, plus all applied migrations with --list-migrations."
+---
+
+The `status` command queries the target environment's database and reports which migrations have been applied. By default it shows only the most recently applied migration, giving you a quick snapshot of where that environment stands. Add `--list-migrations` to see the full history of every applied migration.
+
+## Usage
+
+```bash
+2am-smt status <env> [options]
+```
+
+## Arguments
+
+<ParamField path="env" type="string" required>
+  The name of the environment to check, as defined in `configuration.yml` (e.g. `local`, `staging`, `production`).
+</ParamField>
+
+## Options
+
+<ParamField query="-p, --project <path>" type="string">
+  Path to the `configuration.yml` file for your project. Defaults to `./configuration.yml` in the current working directory.
+</ParamField>
+
+<ParamField query="-l, --list-migrations" type="boolean">
+  List every migration that has been applied to the environment, in the order they were applied.
+</ParamField>
+
+## Examples
+
+Show the last applied migration for `local`:
+
+```bash
+2am-smt status local
+```
+
+Output:
+
+```
+Migration status for environment: local
+
+  Last applied: 20240102090000_add_orders_table
+  Applied at:   2024-01-02 09:14:32 UTC
+
+  Pending migrations: 1
+    - 20240103150000_add_index_to_email
+```
+
+Show the full applied migration history for `local`:
+
+```bash
+2am-smt status local --list-migrations
+```
+
+Output:
+
+```
+Migration status for environment: local
+
+  Applied migrations (2):
+    ✔  20240101120000_add_users_table     applied 2024-01-01 12:03:10 UTC
+    ✔  20240102090000_add_orders_table    applied 2024-01-02 09:14:32 UTC
+
+  Pending migrations (1):
+    -  20240103150000_add_index_to_email
+```
+
+<Tip>
+  Run `status` before deploying to **confirm exactly which migrations are pending** in your target environment. This prevents surprises mid-deployment and helps you estimate how long the migration step will take.
+</Tip>

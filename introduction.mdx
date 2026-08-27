@@ -1,0 +1,72 @@
+---
+title: "2AM™ Database//ᐩᐩ"
+sidebarTitle: "Introduction"
+description: "Database Migrations With HiFi Chaos"
+icon: "draft2digital"
+---
+
+# All Rights Reserved: 2AM™ OF UTO™ AT TACHYON™<br />
+
+**_2AM™ DATABASEᐩᐩ IS A HiFi-SQL MIGRATION TOOL ON MYSQL, POSTGRESQL, & SQL SERVERS // V. CONTROLLED, EDITABLE, & CI/CD//UX/UI READY \>\>_**<br />
+
+2AM™ Databaseᐩᐩ is a database schema migration tool built around a simple principle: your migrations should be plain `.sql` files that any developer can read, review, and run without installing a framework. By keeping everything in standard SQL, you get full transparency into every change, seamless code-review workflows, and a migration history that doubles as living documentation of your schema.
+
+## Key Features
+
+<CardGroup cols={2}>
+  <Card title="Pure SQL" icon="database">
+    Write migrations in plain `.sql` files — no ORM syntax, no proprietary DSL. Every change is readable, reviewable, and portable across teams and tools.
+  </Card>
+
+  <Card title="Multi-Environment" icon="layer-group">
+    Define as many environments as you need (`local`, `staging`, `production`, and more) in a single `configuration.yml` and target any of them with one command.
+  </Card>
+
+  <Card title="Dynamic Replacements" icon="arrows-rotate">
+    Inject environment-specific values into your SQL at runtime using configurable placeholders. Keep credentials and environment details out of your migration files.
+  </Card>
+
+  <Card title="Flexible Credentials" icon="key">
+    Supply database credentials via `configuration.yml`, environment variables, or interactive prompts. Credentials never have to be committed to source control.
+  </Card>
+
+  <Card title="Scripts Support" icon="scroll">
+    Run arbitrary SQL scripts — seed data, stored procedures, views — alongside your schema migrations using the dedicated `scripts/` directory.
+  </Card>
+
+  <Card title="CI/CD Ready" icon="circle-check">
+    The CLI is designed for automation. Use it in GitHub Actions, GitLab CI, Bitbucket Pipelines, or any other pipeline to deploy schema changes on every merge.
+  </Card>
+</CardGroup>
+
+## Supported Databases
+
+2AM Database\+\+ works with the three most widely used relational databases:
+
+- **MySQL / MariaDB**
+- **PostgreSQL**
+- **Microsoft SQL Server**
+
+## Two ways to use it
+
+### Desktop App
+
+The 2AM Database\+\+ desktop application gives you a graphical interface for managing migrations without touching the terminal. It runs natively on **macOS**, **Windows**, and **Linux**, making it ideal for developers who prefer a visual workflow or who are onboarding a team that is less comfortable with the command line.
+
+### CLI (`@2amtech/sql-migration-tool`)
+
+The npm CLI package is the recommended choice for automation and CI/CD pipelines. Install it globally or as a dev dependency, then drive your entire migration workflow — initializing projects, creating migration files, testing connections, and deploying changes — with simple `2am-smt` commands.
+
+```bash
+npm install -g @2amtech/sql-migration-tool
+```
+
+<Note>
+  Both the desktop application and the CLI are **MIT licensed** and completely free to use in personal and commercial projects.
+</Note>
+
+## Next steps
+
+<Card title="Quickstart" icon="rocket" href="/quickstart">
+  Install the CLI and apply your first migration in under 5 minutes.
+</Card>

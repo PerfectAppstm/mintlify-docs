@@ -1,0 +1,132 @@
+---
+title: "Quickstart: Run Your First Migration with 2AM Database++"
+sidebarTitle: "Quickstart"
+description: "Install the 2AM Database++ CLI, initialize a project, write a schema migration in plain SQL, and apply it to a database in minutes."
+---
+
+This guide walks you through everything you need to run your first database migration with 2AM Database++. By the end you will have the CLI installed, a project initialized, and a real schema change applied to a local database — all using plain SQL.
+
+<Note>
+  2AM Database++ supports **MySQL / MariaDB**, **PostgreSQL**, and **Microsoft SQL Server**. The CLI commands are identical regardless of which database you use; only the connection details in `configuration.yml` differ.
+</Note>
+
+<Steps>
+  <Step title="Install the CLI">
+    Install the `@2amtech/sql-migration-tool` package globally so the `2am-smt` command is available in your terminal.
+
+    ```bash
+    npm install -g @2amtech/sql-migration-tool
+    ```
+
+    Verify the installation succeeded:
+
+    ```bash
+    2am-smt --version
+    ```
+
+    ```
+    @2amtech/sql-migration-tool v1.0.0
+    ```
+  </Step>
+
+  <Step title="Initialize a new project">
+    Navigate to your project directory and run `2am-smt init` to scaffold the required folder structure and configuration file.
+
+    ```bash
+    cd my-project
+    2am-smt init
+    ```
+
+    The command creates the following files:
+
+    | Path | Purpose |
+    |---|---|
+    | `configuration.yml` | Defines environments and their connection details |
+    | `migrations/up/` | Holds forward migration SQL files |
+    | `migrations/down/` | Holds rollback migration SQL files |
+    | `scripts/` | Optional SQL scripts (seeds, stored procedures, views) |
+
+    Open `configuration.yml` and fill in the connection details for your `local` environment before continuing.
+  </Step>
+
+  <Step title="Test the connection">
+    Confirm that the tool can reach your database before you try to run any migrations.
+
+    ```bash
+    2am-smt connection:test local
+    ```
+
+    A successful connection prints:
+
+    ```
+    Testing connection for environment: local
+    ✔ Connection successful
+    ```
+
+    If the connection fails, double-check the host, port, credentials, and database name in `configuration.yml`.
+  </Step>
+
+  <Step title="Create a migration">
+    Generate a new timestamped migration file pair with a descriptive name.
+
+    ```bash
+    2am-smt migrate:new create_users_table
+    ```
+
+    The CLI creates two files:
+
+    ```
+    migrations/up/20240101120000_create_users_table.sql
+    migrations/down/20240101120000_create_users_table.sql
+    ```
+
+    Open the `up` file and write the forward migration:
+
+    ```sql
+    -- migrations/up/20240101120000_create_users_table.sql
+    CREATE TABLE users (
+      id          INT          NOT NULL AUTO_INCREMENT PRIMARY KEY,
+      email       VARCHAR(255) NOT NULL UNIQUE,
+      full_name   VARCHAR(255) NOT NULL,
+      created_at  TIMESTAMP    NOT NULL DEFAULT CURRENT_TIMESTAMP
+    );
+    ```
+
+    Open the `down` file and write the rollback:
+
+    ```sql
+    -- migrations/down/20240101120000_create_users_table.sql
+    DROP TABLE IF EXISTS users;
+    ```
+  </Step>
+
+  <Step title="Apply the migration">
+    Run all pending migrations against your `local` environment.
+
+    ```bash
+    2am-smt migrate:to local
+    ```
+
+    You will see output similar to:
+
+    ```
+    Running migrations for environment: local
+    ✔ 20240101120000_create_users_table.sql applied
+
+    1 migration applied successfully.
+    ```
+
+    The tool records each applied migration so that re-running the command does not execute the same file twice.
+  </Step>
+</Steps>
+
+## Next steps
+
+<CardGroup cols={2}>
+  <Card title="Core Concepts" icon="book-open" href="/concepts/projects">
+    Understand how migration ordering, environment configuration, and dynamic replacements work under the hood.
+  </Card>
+  <Card title="CLI Reference" icon="terminal" href="/cli/overview">
+    Explore the full list of `2am-smt` commands with all available flags and options.
+  </Card>
+</CardGroup>

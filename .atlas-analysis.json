@@ -1,0 +1,92 @@
+{
+  "projectType": "cli-tool",
+  "projectName": "2AM Database++",
+  "projectDescription": "A cross-platform desktop application and CLI utility for managing database schema migrations with pure SQL files, multi-environment support, and CI/CD integration.",
+  "theme": "luma",
+  "primaryColor": "#ef7025",
+  "lightColor": "#eec9bc",
+  "darkColor": "#4fa1ab",
+  "navigation": {
+    "tabs": [
+      {
+        "tab": "Documentation",
+        "groups": [
+          {
+            "group": "Get Started",
+            "pages": [
+              "introduction",
+              "quickstart",
+              "installation"
+            ]
+          },
+          {
+            "group": "Core Concepts",
+            "pages": [
+              "concepts/projects",
+              "concepts/environments",
+              "concepts/migrations",
+              "concepts/scripts",
+              "concepts/dynamic-replacements"
+            ]
+          },
+          {
+            "group": "Guides",
+            "pages": [
+              "guides/create-project",
+              "guides/write-migrations",
+              "guides/run-migrations",
+              "guides/run-scripts",
+              "guides/cicd"
+            ]
+          },
+          {
+            "group": "Configuration",
+            "pages": [
+              "configuration/credentials",
+              "configuration/configuration-file"
+            ]
+          }
+        ]
+      },
+      {
+        "tab": "CLI Reference",
+        "groups": [
+          {
+            "group": "Commands",
+            "pages": [
+              "cli/overview",
+              "cli/init",
+              "cli/connection-test",
+              "cli/migrate-new",
+              "cli/migrate-to",
+              "cli/status",
+              "cli/script-new",
+              "cli/script-run"
+            ]
+          }
+        ]
+      }
+    ]
+  },
+  "keyFeatures": [
+    "Pure SQL migrations — no ORM or DSL, just plain .sql files",
+    "Multi-environment support — dev, staging, and production from one project",
+    "Dynamic replacements — inject environment-specific values at runtime",
+    "Flexible credential management — .env files, AWS Secrets Manager, or direct",
+    "Scripts support — run ad-hoc SQL for maintenance and data backfills",
+    "Multi-project tracking — isolate migrations per service on a shared database",
+    "CI/CD ready — headless CLI for automated deployments",
+    "Desktop GUI for macOS, Windows, and Linux"
+  ],
+  "publicApiSurface": [
+    "2am-smt init",
+    "2am-smt connection:test <environment>",
+    "2am-smt migrate:new <migrationName>",
+    "2am-smt migrate:to <env> [migrationName]",
+    "2am-smt status <env>",
+    "2am-smt script:new <scriptName>",
+    "2am-smt script:run <env> <scriptName>",
+    "npm run migrate <env>",
+    "configuration.yml"
+  ]
+}

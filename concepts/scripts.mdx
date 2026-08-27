@@ -1,0 +1,63 @@
+---
+title: "SQL Scripts for Ad-Hoc Database Tasks in 2AM Database++"
+sidebarTitle: "Scripts"
+description: "Scripts are reusable SQL files for maintenance tasks, data backfills, and one-off operations — separate from versioned migrations."
+---
+
+Not every database operation is a schema change. Sometimes you need to backfill data into a new column, reseed a lookup table, or run a targeted fix on a production row — tasks that are operational rather than structural. Scripts in 2AM Database++ give you a place for exactly this kind of work. Unlike migrations, scripts are not versioned or tracked as part of your schema state. They are reusable SQL files you run deliberately, on demand, against whichever environment you choose.
+
+## Scripts vs. Migrations
+
+The key distinction is intent and tracking:
+
+- **Migrations** are versioned, ordered, and tracked. Each migration is applied exactly once per environment and becomes part of the permanent schema history.
+- **Scripts** are untracked and repeatable. You can run the same script as many times as you need, against any environment, without affecting migration state.
+
+Use scripts when the operation does not change the schema itself, or when you need to re-run the same SQL periodically.
+
+## Common Use Cases
+
+- **Data backfills** — populate a new column after it has been added by a migration
+- **Maintenance tasks** — reindex tables, update statistics, or clean up stale rows
+- **Seed data** — insert reference data or test fixtures into a fresh environment
+- **One-off fixes** — correct a specific data inconsistency without creating a permanent migration
+
+## Where Scripts Live
+
+Place all script files in the `scripts/` folder at the root of your project directory:
+
+```
+.
+└── scripts/
+    ├── backfill_user_roles.sql
+    ├── reseed_categories.sql
+    └── cleanup_expired_sessions.sql
+```
+
+There is no required naming convention for scripts, but descriptive names make your intent clear when selecting a script to run.
+
+## Dynamic Replacements in Scripts
+
+Scripts support the same **dynamic replacements** system as migrations. You can use placeholder values in your SQL that the tool substitutes with environment-specific text at runtime. This lets a single script file behave correctly whether it runs against `local`, `staging`, or `production`.
+
+See [Dynamic Replacements](/concepts/dynamic-replacements) for full details on how to configure substitutions.
+
+## Running Scripts
+
+**Desktop app:** Open your project, navigate to the Scripts section, select the target environment, choose the script file, and click **Run**.
+
+**CLI:**
+
+```bash
+2am-smt script:run <env> <scriptName>
+```
+
+For example, to run `backfill_user_roles.sql` against the `staging` environment:
+
+```bash
+2am-smt script:run staging backfill_user_roles
+```
+
+<Note>
+  Unlike migrations, scripts are **not tracked** in the database. Running the same script twice will execute it twice — there is no deduplication or idempotency check. If your script must be safe to re-run, write it to be idempotent (for example, use `INSERT ... ON CONFLICT DO NOTHING` or check for existing rows before inserting).
+</Note>

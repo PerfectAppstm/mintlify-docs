@@ -1,0 +1,61 @@
+---
+title: "2am-smt connection:test — Verify Database Connectivity"
+sidebarTitle: "Connection Test"
+description: "Use 2am-smt connection:test to validate database credentials and confirm connectivity for any environment before running migrations."
+---
+
+The `connection:test` command attempts to open a connection to your database using the credentials defined for the target environment in `configuration.yml`. Use it to verify that your connection settings are correct before running migrations or scripts, and to quickly diagnose connectivity issues in new or changed environments.
+
+## Usage
+
+```bash
+2am-smt connection:test <environment> [options]
+```
+
+## Arguments
+
+<ParamField path="environment" type="string" required>
+  The name of the environment to test, as defined in your `configuration.yml`. Common values include `local`, `staging`, and `production`.
+</ParamField>
+
+## Options
+
+<ParamField query="-p, --project <path>" type="string">
+  Path to the `configuration.yml` file for your project. Defaults to `./configuration.yml` in the current working directory.
+</ParamField>
+
+## Examples
+
+Test the connection for your `local` environment:
+
+```bash
+2am-smt connection:test local
+```
+
+Test a `production` environment using a configuration file in a specific location:
+
+```bash
+2am-smt connection:test production -p /path/to/project/configuration.yml
+```
+
+## Output
+
+**Successful connection:**
+
+```
+✔  Connecting to environment: local
+✔  Connection successful — host: localhost, database: myapp_dev
+```
+
+**Failed connection:**
+
+```
+✔  Connecting to environment: production
+✗  Connection failed — could not connect to host: db.example.com
+   Error: Connection timed out after 10000ms
+   Check your credentials and network access in configuration.yml.
+```
+
+<Tip>
+  Run `connection:test` before applying migrations in any environment you haven't used recently — especially `staging` or `production`. Catching a misconfigured connection early prevents failed deployments and leaves your database in a consistent state.
+</Tip>

@@ -1,0 +1,67 @@
+---
+title: "Execute a SQL Script Against Any Environment with 2am-smt"
+sidebarTitle: "Script Run"
+description: "2am-smt script:run executes a named SQL script from your project against a target environment's database outside the migration flow."
+---
+
+The `script:run` command executes a SQL script from your project's `scripts/` folder against the target environment's database. Use it for data backfills, ad-hoc maintenance, report queries, or any operation you want to run outside the versioned migration flow. Provide the script name without the `.sql` extension — the CLI resolves the file automatically from your project directory.
+
+## Usage
+
+```bash
+2am-smt script:run <env> <scriptName> [options]
+```
+
+## Arguments
+
+<ParamField path="env" type="string" required>
+  The name of the target environment as defined in `configuration.yml` (e.g. `local`, `staging`, `production`).
+</ParamField>
+
+<ParamField path="scriptName" type="string" required>
+  The name of the script file to execute, **without** the `.sql` extension (e.g. `backfill_user_emails`). The CLI looks for a matching file in the `scripts/` directory of your project.
+</ParamField>
+
+## Options
+
+<ParamField query="-p, --project <path>" type="string">
+  Path to the `configuration.yml` file for your project. Defaults to `./configuration.yml` in the current working directory.
+</ParamField>
+
+## Examples
+
+Run a backfill script against the `local` environment:
+
+```bash
+2am-smt script:run local backfill_user_emails
+```
+
+Run a cleanup script against `production` using a specific project configuration:
+
+```bash
+2am-smt script:run production cleanup_old_sessions -p /path/to/project/configuration.yml
+```
+
+## Output
+
+**Successful execution:**
+
+```
+Running script: backfill_user_emails
+Target environment: local
+
+✔  Script executed successfully  (104ms)
+   Rows affected: 1482
+```
+
+**Script not found:**
+
+```
+✗  Script not found: backfill_user_emails
+   Expected file at: scripts/backfill_user_emails.sql
+   Run `2am-smt script:new backfill_user_emails` to create it.
+```
+
+<Warning>
+  Scripts are **not tracked** in the migration history table. Running the same script multiple times will execute it multiple times against the database — there is no deduplication or guard. Make sure your SQL is idempotent (safe to run repeatedly) if there is any chance it could be executed more than once, or carefully control when and how often you invoke `script:run` in your workflows.
+</Warning>

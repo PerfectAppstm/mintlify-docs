@@ -1,0 +1,126 @@
+{
+  "$schema": "https://mintlify.com/docs.json",
+  "name": "2AM Database++",
+  "theme": "luma",
+  "colors": {
+    "primary": "#ef7025",
+    "light": "#eec9bc",
+    "dark": "#4fa1ab"
+  },
+  "favicon": "/favicon.svg",
+  "navbar": {
+    "primary": {
+      "type": "github",
+      "href": "https://github.com/2amtech"
+    }
+  },
+  "navigation": {
+    "tabs": [
+      {
+        "tab": "About",
+        "pages": [
+          "about"
+        ]
+      },
+      {
+        "tab": "Documentation",
+        "groups": [
+          {
+            "group": "Get Started",
+            "pages": [
+              "introduction",
+              "quickstart",
+              "installation"
+            ]
+          },
+          {
+            "group": "Core Concepts",
+            "pages": [
+              "concepts/projects",
+              "concepts/environments",
+              "concepts/migrations",
+              "concepts/scripts",
+              "concepts/dynamic-replacements"
+            ]
+          },
+          {
+            "group": "Guides",
+            "pages": [
+              "guides/create-project",
+              "guides/write-migrations",
+              "guides/run-migrations",
+              "guides/run-scripts",
+              "guides/cicd",
+              "guides/mcp"
+            ]
+          },
+          {
+            "group": "Configuration",
+            "pages": [
+              "configuration/credentials",
+              "configuration/configuration-file"
+            ]
+          },
+          {
+            "group": "Reference",
+            "pages": [
+              "reference/database-of-links",
+              "reference/dropstone-updates"
+            ]
+          }
+        ]
+      },
+      {
+        "tab": "CLI Reference",
+        "groups": [
+          {
+            "group": "Commands",
+            "pages": [
+              "cli/overview",
+              "cli/init",
+              "cli/connection-test",
+              "cli/migrate-new",
+              "cli/migrate-to",
+              "cli/status",
+              "cli/script-new",
+              "cli/script-run"
+            ]
+          }
+        ]
+      }
+    ]
+  },
+  "footer": {
+    "socials": {
+      "website": "https://2am.tech"
+    },
+    "links": [
+      {
+        "header": "About",
+        "items": [
+          {
+            "label": "About 2AM",
+            "href": "/about"
+          },
+          {
+            "label": "Database of Links",
+            "href": "/reference/database-of-links"
+          }
+        ]
+      }
+    ]
+  },
+  "contextual": {
+    "options": [
+      "copy",
+      "view",
+      "chatgpt",
+      "claude",
+      "mcp",
+      "add-mcp",
+      "cursor",
+      "vscode"
+    ],
+    "display": "header"
+  }
+}

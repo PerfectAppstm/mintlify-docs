@@ -1,0 +1,75 @@
+---
+title: "Create a New SQL Migration File with 2am-smt migrate:new"
+sidebarTitle: "Migrate New"
+description: "2am-smt migrate:new generates a timestamped up/down SQL migration file pair in your project, ready to be filled with schema change SQL."
+---
+
+The `migrate:new` command generates a pair of SQL migration files — one for applying the change (`up`) and one for reverting it (`down`) — both prefixed with a UTC timestamp to ensure correct ordering. Run this command every time you need to make a schema change, then fill in the generated files with your SQL before applying the migration.
+
+## Usage
+
+```bash
+2am-smt migrate:new <migrationName> [options]
+```
+
+## Arguments
+
+<ParamField path="migrationName" type="string" required>
+  A short, descriptive name for the migration. Snake_case is recommended (e.g. `add_users_table`, `drop_legacy_column`). The name is appended to the timestamp to form the final filename.
+</ParamField>
+
+## Options
+
+<ParamField query="-p, --project <path>" type="string">
+  Path to the `configuration.yml` file for your project. Defaults to `./configuration.yml` in the current working directory.
+</ParamField>
+
+## Example
+
+Create a migration to add a users table:
+
+```bash
+2am-smt migrate:new add_users_table
+```
+
+## Generated Files
+
+The command creates two files in your project:
+
+```
+migrations/
+├── up/
+│   └── 20240101120000_add_users_table.sql
+└── down/
+    └── 20240101120000_add_users_table.sql
+```
+
+**`migrations/up/20240101120000_add_users_table.sql`** — forward migration:
+
+```sql
+-- Migration: add_users_table
+-- Direction: UP
+-- Created: 2024-01-01 12:00:00 UTC
+--
+-- Write your forward (apply) migration SQL below.
+-- This file runs when the migration is applied.
+
+```
+
+**`migrations/down/20240101120000_add_users_table.sql`** — rollback migration:
+
+```sql
+-- Migration: add_users_table
+-- Direction: DOWN
+-- Created: 2024-01-01 12:00:00 UTC
+--
+-- Write your reverse (rollback) migration SQL below.
+-- This file runs when the migration is rolled back.
+
+```
+
+Open both files and write the appropriate SQL before running [`migrate:to`](/cli/migrate-to).
+
+<Tip>
+  Use clear, specific names that describe exactly what changes — for example, `create_orders_table`, `add_index_to_email`, or `rename_column_user_id`. Descriptive names make your migration history easy to scan and help your team understand the evolution of the schema at a glance.
+</Tip>

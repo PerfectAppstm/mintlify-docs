@@ -1,0 +1,119 @@
+---
+title: "mcp"
+sidebarTitle: "MCP Server"
+description: "Connect the 2AM Database++ MCP server to Claude, Cursor, VS Code, and other AI tools to search these docs directly from your editor."
+---
+
+The 2AM Database\+\+ docs ship a hosted Model Context Protocol (MCP) server. Point any MCP-compatible AI tool (Claude, Cursor, VS Code, Codex, ChatGPT) at it to search and read this documentation without leaving your editor.
+
+## Server URL
+
+Use this endpoint in any MCP client:
+
+```text MCP server URL
+https://2-am.mintlify.io/mcp
+```
+
+<Tip>
+  On any page, open the contextual menu in the header and pick **Copy MCP server URL**, **Connect to Cursor**, or **Connect to VS Code** to skip the manual setup below.
+</Tip>
+
+## What the server exposes
+
+- **Search** across every indexed page of the 2AM Database\+\+ docs
+- **Query docs filesystem** to read full page content and browse structure
+- **Submit feedback** so agents can flag incorrect or outdated docs
+
+## Connect from your tool
+
+<Tabs>
+  <Tab title="Cursor">
+    <Steps>
+      <Step title="Open MCP settings">
+        Press <kbd>Cmd</kbd> \+ <kbd>Shift</kbd> \+ <kbd>P</kbd> (<kbd>Ctrl</kbd> \+ <kbd>Shift</kbd> \+ <kbd>P</kbd> on Windows), search **Open MCP settings**, then click **Add custom MCP**.
+      </Step>
+      <Step title="Add the server">
+        ```json mcp.json
+        {
+          "mcpServers": {
+            "2AM Database++": {
+              "url": "https://2-am.mintlify.io/mcp"
+            }
+          }
+        }
+        ```
+      </Step>
+      <Step title="Test">
+        In chat, ask: _"What tools do you have available?"_ Cursor should list the 2AM Database\+\+ server.
+      </Step>
+    </Steps>
+  </Tab>
+  <Tab title="VS Code">
+    Create `.vscode/mcp.json` in your workspace:
+
+    ```json .vscode/mcp.json
+    {
+      "servers": {
+        "2AM Database++": {
+          "type": "http",
+          "url": "https://2-am.mintlify.io/mcp"
+        }
+      }
+    }
+    ```
+  </Tab>
+  <Tab title="Claude">
+    <Steps>
+      <Step title="Add a custom connector">
+        In Claude, go to **Settings → Connectors → Add custom connector**.
+      </Step>
+      <Step title="Configure the server">
+        - **Name:** `2AM Database++`
+        - **URL:** `https://2-am.mintlify.io/mcp`
+
+        Click **Add**.
+      </Step>
+      <Step title="Use in a chat">
+        Click the attachments button (plus icon) and select **2AM Database\+\+**.
+      </Step>
+    </Steps>
+  </Tab>
+  <Tab title="Claude Code">
+    ```bash
+    claude mcp add --transport http "2AM Database++" https://2-am.mintlify.io/mcp
+    ```
+
+    Verify:
+
+    ```bash
+    claude mcp list
+    ```
+  </Tab>
+  <Tab title="Codex">
+    Add to `~/.codex/config.toml`:
+
+    ```toml ~/.codex/config.toml
+    [mcp_servers.two_am_dbpp]
+    url = "https://2-am.mintlify.io/mcp"
+    ```
+  </Tab>
+  <Tab title="npx (any client)">
+    Install into any supported client with the Mintlify CLI helper:
+
+    ```bash
+    npx mint-mcp add 2-am
+    ```
+  </Tab>
+</Tabs>
+
+## Example prompts
+
+Once connected, try prompts like:
+
+- _"Using the 2AM Database\+\+ MCP, how do I write a migration and run it against staging?"_
+- _"Look up how dynamic replacements work in 2AM Database\+\+."_
+- _"Find every CLI command that takes an environment flag in 2AM Database\+\+."_
+
+## Rate limits
+
+The hosted MCP server is rate-limited per IP (5,000 requests/hour) and per site (10,000 tool calls/hour). If you hit a `429 Too Many Requests`, back off and retry.

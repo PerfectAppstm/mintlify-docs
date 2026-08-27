@@ -1,0 +1,101 @@
+---
+title: "Apply or Revert Migrations with 2am-smt migrate:to"
+sidebarTitle: "Migrate To"
+description: "2am-smt migrate:to applies all pending migrations or rolls back to a target state, with optional step control and CI/CD automation support."
+---
+
+The `migrate:to` command applies pending migrations to — or rolls back applied migrations from — the specified environment. When called without a target migration name, it applies every pending migration in timestamp order. You can also target a specific migration, limit the number of steps with `--count`, or suppress confirmation prompts for automated pipelines with `--auto-apply`.
+
+## Usage
+
+```bash
+2am-smt migrate:to <env> [migrationName] [options]
+```
+
+## Arguments
+
+<ParamField path="env" type="string" required>
+  The name of the target environment as defined in `configuration.yml` (e.g. `local`, `staging`, `production`).
+</ParamField>
+
+<ParamField path="migrationName" type="string">
+  The name of the target migration (e.g. `20240101120000_add_users_table`). When provided, `migrate:to` applies or reverts migrations until the database reaches this migration. When omitted, all pending migrations are applied.
+</ParamField>
+
+## Options
+
+<ParamField query="-p, --project <path>" type="string">
+  Path to the `configuration.yml` file for your project. Defaults to `./configuration.yml` in the current working directory.
+</ParamField>
+
+<ParamField query="-a, --auto-apply" type="boolean">
+  Apply migrations without displaying a confirmation prompt. Required for non-interactive environments such as CI/CD pipelines.
+</ParamField>
+
+<ParamField query="-c, --count <n>" type="integer">
+  Control how many migrations to apply or roll back:
+  - **Positive integer** (e.g. `2`) — apply the next N pending migrations.
+  - **Negative integer** (e.g. `-2`) — roll back the last N applied migrations.
+</ParamField>
+
+## Examples
+
+Apply all pending migrations to `local`:
+
+```bash
+2am-smt migrate:to local
+```
+
+Apply migrations up to (and including) a specific migration on `staging`:
+
+```bash
+2am-smt migrate:to staging 20240101120000_add_users_table
+```
+
+Apply all pending migrations in a CI/CD pipeline without a confirmation prompt:
+
+```bash
+2am-smt migrate:to production --auto-apply
+```
+
+Roll back the last 2 applied migrations on `local`:
+
+```bash
+2am-smt migrate:to local -c -2
+```
+
+## Output
+
+**Applying migrations:**
+
+```
+Pending migrations for environment: local
+  → 20240101120000_add_users_table
+  → 20240102090000_add_orders_table
+
+Apply 2 migration(s)? (y/N): y
+
+✔  Applied: 20240101120000_add_users_table  (42ms)
+✔  Applied: 20240102090000_add_orders_table  (38ms)
+
+2 migration(s) applied successfully.
+```
+
+**Rolling back migrations:**
+
+```
+Rolling back 2 migration(s) for environment: local
+  ← 20240102090000_add_orders_table
+  ← 20240101120000_add_users_table
+
+Roll back 2 migration(s)? (y/N): y
+
+✔  Rolled back: 20240102090000_add_orders_table  (29ms)
+✔  Rolled back: 20240101120000_add_users_table  (31ms)
+
+2 migration(s) rolled back successfully.
+```
+
+<Warning>
+  Some migrations are **irreversible** by nature — for example, dropping a column or deleting data. If you did not write a corresponding `down` migration, or if data has changed since the migration was applied, you may not be able to roll back safely. Always review your `down` SQL files before rolling back in `staging` or `production`, and take a database backup before applying destructive migrations.
+</Warning>

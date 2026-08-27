@@ -1,0 +1,105 @@
+---
+title: "How to Install 2AM Database++: Desktop App and CLI"
+sidebarTitle: "Installation"
+description: "Download the 2AM Database++ desktop app for macOS, Windows, or Linux, or install the npm CLI package for CI/CD automation workflows."
+---
+
+2AM Database++ is available in two forms: a **CLI package** you install via npm for terminal-based and automated workflows, and a **desktop application** you download and install natively on macOS, Windows, or Linux. You can use either form independently or together depending on your team's preferences.
+
+<Tabs>
+  <Tab title="CLI">
+    ## Install via npm
+
+    The CLI package `@2amtech/sql-migration-tool` is published to the npm registry and can be installed globally so the `2am-smt` command is available system-wide.
+
+    ```bash
+    npm install -g @2amtech/sql-migration-tool
+    ```
+
+    Verify the installation:
+
+    ```bash
+    2am-smt --version
+    ```
+
+    ```
+    @2amtech/sql-migration-tool v1.0.0
+    ```
+
+    You can also install it as a project dev dependency if you want to pin a specific version per repository:
+
+    ```bash
+    npm install --save-dev @2amtech/sql-migration-tool
+    ```
+
+    Then invoke it through your `package.json` scripts or via `npx`:
+
+    ```bash
+    npx 2am-smt --version
+    ```
+
+    <Tip>
+      Use **Node.js LTS** for the most stable experience. The current LTS release is the recommended baseline — any version at or above the latest LTS line will work.
+    </Tip>
+
+    ## Requirements
+
+    | Runtime | Support |
+    |---|---|
+    | Node.js LTS (recommended) | ✅ Full support |
+    | Node.js Current | ✅ Supported |
+    | Bun | ✅ Compatible |
+    | Deno | ✅ Compatible |
+
+    <Note>
+      Windows users can run the CLI in **PowerShell**, **Command Prompt**, or **Windows Terminal**. All `2am-smt` commands work on Windows without modification.
+    </Note>
+  </Tab>
+
+  <Tab title="Desktop App">
+    ## Download the desktop application
+
+    The 2AM Database++ desktop app provides a graphical interface for managing migrations without using the terminal. Choose the download that matches your operating system and architecture.
+
+    <CardGroup cols={2}>
+      <Card title="macOS — Apple Silicon" icon="apple">
+        Download the `.dmg` installer built for Macs with an M-series (Apple Silicon) chip.
+      </Card>
+      <Card title="macOS — Intel" icon="apple">
+        Download the `.dmg` installer built for Macs with an Intel processor.
+      </Card>
+      <Card title="Windows — Microsoft Store" icon="windows">
+        Install the app directly from the Microsoft Store for automatic updates and easy uninstallation.
+      </Card>
+      <Card title="Linux — Debian AMD64" icon="linux">
+        Download the `.deb` package for Debian, Ubuntu, and compatible distributions on AMD64 hardware.
+      </Card>
+      <Card title="Linux — Portable AMD64" icon="linux">
+        Download the portable AppImage or archive for AMD64 Linux systems that do not use apt/dpkg.
+      </Card>
+    </CardGroup>
+
+    <Note>
+      The Windows desktop application is available through the **Microsoft Store**. CLI usage on Windows is supported via npm and works in any terminal emulator.
+    </Note>
+
+    ## System requirements
+
+    | Platform | Minimum requirement |
+    |---|---|
+    | macOS | macOS 12 Monterey or later |
+    | Windows | Windows 10 version 1903 or later |
+    | Linux (Debian) | Debian 11 / Ubuntu 20.04 or later, AMD64 |
+    | Linux (Portable) | Any modern AMD64 Linux distribution |
+  </Tab>
+</Tabs>
+
+## Next steps
+
+Once you have the CLI or desktop app installed, initialize your first migration project:
+
+```bash
+2am-smt init
+```
+
+Then follow the [Quickstart guide](/quickstart) to create and apply your first migration in under 5 minutes.

@@ -1,0 +1,75 @@
+---
+title: "Database Migrations: Versioned SQL Files in 2AM Database++"
+sidebarTitle: "Migrations"
+description: "Migrations are versioned plain SQL files that define schema changes. 2AM Database++ tracks which migrations have been applied per environment."
+---
+
+Migrations are the mechanism by which you evolve your database schema over time in a controlled, repeatable way. In 2AM Database++, every migration is a plain `.sql` file — no ORM abstractions, no proprietary DSL, no code generation. You write standard SQL that your database already understands, and the tool handles tracking, ordering, and execution. This keeps your migration history readable by anyone on the team and fully portable between tools.
+
+## Migration Files: Up and Down
+
+Each schema change is represented by a pair of SQL files:
+
+- An **up migration** in `migrations/up/` — applies the change (e.g., creates a table).
+- A **down migration** in `migrations/down/` — reverses the change (e.g., drops that table).
+
+Both files share the same name, which follows a timestamp-based naming convention to guarantee execution order:
+
+```
+20240101120000_create_users_table.sql
+```
+
+The timestamp prefix (`YYYYMMDDHHMMSS`) ensures migrations are always sorted and applied in the order they were created, regardless of how the directory is listed.
+
+### Example Up Migration
+
+```sql
+-- migrations/up/20240101120000_create_users_table.sql
+
+CREATE TABLE users (
+  id          SERIAL PRIMARY KEY,
+  email       VARCHAR(255) NOT NULL UNIQUE,
+  created_at  TIMESTAMP NOT NULL DEFAULT NOW()
+);
+```
+
+### Example Down Migration
+
+```sql
+-- migrations/down/20240101120000_create_users_table.sql
+
+DROP TABLE IF EXISTS users;
+```
+
+## How Tracking Works
+
+When you apply a migration to an environment, 2AM Database++ inserts a record into a **tracking table** in that database. The tracking table name is configured per project (defaulting to `_migrations`) and stores the migration name, the project Identifier, and the timestamp of when it was applied.
+
+Before running any migrations, the tool queries this table to determine which files have already been executed. It then applies only the pending ones, in order. Each environment maintains its own tracking state — applying a migration to `staging` has no effect on what `production` considers pending.
+
+## Migration Status
+
+In the desktop app and CLI output, each migration displays one of the following statuses:
+
+| Status | Meaning |
+|---|---|
+| ❓ (question mark) | The migration has not been applied to the selected environment. |
+| ✅ (green checkmark) | The migration has been applied and is recorded in the tracking table. |
+
+## Single Transaction
+
+Each migration can optionally be configured to run inside a **single database transaction**. When enabled, if any statement in the migration file fails, the entire migration is rolled back and no partial changes are left in the database. This is the safest default for most schema changes.
+
+Disable single transaction mode only when you need to execute statements that cannot run inside a transaction (for example, certain `CREATE INDEX CONCURRENTLY` operations in PostgreSQL).
+
+## Irreversible Migrations
+
+Some schema changes cannot be undone — dropping a column with data, for example. You can mark a migration as **irreversible** to explicitly indicate that no down script exists. This prevents the tool from attempting a rollback through that migration and signals to your team that the change is permanent.
+
+<Warning>
+  **You cannot roll back past an irreversible migration.** If you attempt to roll back a series of migrations and one of them is marked irreversible, the rollback will stop at that point. Plan irreversible migrations carefully, especially in production.
+</Warning>
+
+<Tip>
+  Always write down migrations during development — even when it feels unnecessary. Rolling back is invaluable when debugging, and the habit ensures your migration history stays complete. You can mark a migration irreversible later once you're confident the change is permanent.
+</Tip>

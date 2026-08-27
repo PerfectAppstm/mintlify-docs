@@ -1,0 +1,71 @@
+---
+title: "2am-smt CLI: Full Command Reference for Database++"
+sidebarTitle: "Overview"
+description: "Full CLI reference for 2AM Database++: install 2am-smt, configure environments, and run migrations and SQL scripts from the terminal."
+---
+
+The `2am-smt` CLI is the command-line interface for **2AM Database++** (SQL Migration Tool by 2am.tech). Use it to initialize migration projects, test database connections, create and apply migrations, and run ad-hoc SQL scripts — all without opening the desktop application. The CLI is especially useful when you need to integrate database migrations into automated pipelines, CI/CD workflows, or server environments where no GUI is available.
+
+## Installation
+
+Install the CLI globally via npm:
+
+```bash
+npm install -g @2amtech/sql-migration-tool
+```
+
+Verify the installation:
+
+```bash
+2am-smt --version
+```
+
+## Global Option
+
+Most commands accept the following option to point to a project outside the current directory:
+
+| Option | Description |
+|---|---|
+| `-p, --project <path>` | Path to the `configuration.yml` file. Defaults to `./configuration.yml` in the current working directory. |
+
+## Command Summary
+
+| Command | Description |
+|---|---|
+| `init` | Initialize a new migration project |
+| `connection:test` | Test database connection |
+| `migrate:new` | Create a new migration file |
+| `migrate:to` | Apply or revert migrations |
+| `status` | Show migration status |
+| `script:new` | Create a new SQL script file |
+| `script:run` | Execute a SQL script |
+
+## Commands
+
+<CardGroup cols={2}>
+  <Card title="init" icon="folder-open" href="/cli/init">
+    Initialize a new migration project with configuration and folder structure.
+  </Card>
+  <Card title="connection:test" icon="plug" href="/cli/connection-test">
+    Validate database credentials and confirm connectivity for an environment.
+  </Card>
+  <Card title="migrate:new" icon="file-plus" href="/cli/migrate-new">
+    Generate a timestamped up/down SQL migration file pair.
+  </Card>
+  <Card title="migrate:to" icon="arrow-right" href="/cli/migrate-to">
+    Apply all pending migrations or roll back to a target state.
+  </Card>
+  <Card title="status" icon="circle-info" href="/cli/status">
+    Show the current migration status for an environment.
+  </Card>
+  <Card title="script:new" icon="file-code" href="/cli/script-new">
+    Create a new SQL script template for ad-hoc operations.
+  </Card>
+  <Card title="script:run" icon="play" href="/cli/script-run">
+    Execute a named SQL script against a target environment.
+  </Card>
+</CardGroup>
+
+<Note>
+  The `2am-smt` CLI is fully non-interactive by default and supports flags like `--auto-apply` to suppress confirmation prompts. This makes it an excellent fit for **CI/CD automation** — you can run migrations as part of your deployment pipeline with no manual intervention required.
+</Note>
