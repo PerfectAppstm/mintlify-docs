@@ -127,13 +127,15 @@
       "cursor",
       "vscode"
     ],
-    "display": "header"
+    "display": "toc"
   },
   "metadata": {
     "timestamp": true
   },
   "styling": {
-    "latex": true
+    "latex": true,
+    "eyebrows": "breadcrumbs",
+    "codeblocks": "system"
   },
   "logo": {
     "light": "/images/EyeSize_P_mask.png",
@@ -176,6 +178,49 @@
   "thumbnails": {
     "fonts": {
       "family": "Inter"
-    }
+    },
+    "background": "/images/1787565318234-artwork.webp"
+  },
+  "interaction": {
+    "drilldown": true
+  },
+  "markdown": {
+    "schema": true
+  },
+  "search": {
+    "prompt": "2AM™ Search ..."
+  },
+  "api": {
+    "params": {
+      "expanded": "all",
+      "post": [
+        "killswitch"
+      ]
+    },
+    "playground": {
+      "display": "auth",
+      "credentials": true
+    },
+    "examples": {
+      "defaults": "all",
+      "languages": [
+        "html",
+        "javascript",
+        "CSS"
+      ],
+      "prefill": true,
+      "autogenerate": true
+    },
+    "url": "full"
+  },
+  "description": "Functional",
+  "seo": {
+    "metatags": {
+      "functional": "99"
+    },
+    "indexing": "navigable"
+  },
+  "variables": {
+    "non-variable": "99"
   }
 }
