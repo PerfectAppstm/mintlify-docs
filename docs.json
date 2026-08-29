@@ -1,6 +1,6 @@
 {
   "$schema": "https://mintlify.com/docs.json",
-  "name": "2AM Database++",
+  "name": "2AM™ Databaseᐩᐩ",
   "theme": "luma",
   "colors": {
     "primary": "#ef7025",
@@ -122,5 +122,11 @@
       "vscode"
     ],
     "display": "header"
+  },
+  "metadata": {
+    "timestamp": true
+  },
+  "styling": {
+    "latex": true
   }
 }
