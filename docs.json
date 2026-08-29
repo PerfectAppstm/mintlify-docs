@@ -29,7 +29,8 @@
       {
         "tab": "About",
         "pages": [
-          "about"
+          "about",
+          "legal/anti-torture"
         ]
       },
       {
