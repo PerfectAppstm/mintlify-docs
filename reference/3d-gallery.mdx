@@ -1,50 +1,69 @@
 ---
 title: "3D Gallery: Brandspike Objects for the 2AM Ecosystem"
 sidebarTitle: "3D Gallery"
-description: "Interactive 3D objects tied to the 2AM brandspike: neon skull, crystal geode, chrome orb, vintage boombox, and retro CRT TV."
+description: "Interactive 3D objects tied to the 2AM brandspike, served from the Nix6 spatial asset network. Drag to orbit, scroll to zoom."
 ---
 
-Interactive 3D objects tied to the 2AM™ brandspike. Each viewer is embedded from [Sketchfab](https://sketchfab.com) and supports drag-to-rotate, scroll-to-zoom, and fullscreen.
+Interactive 3D objects tied to the 2AM™ brandspike. Live models are served from the [Nix6 spatial asset network](https://3dc.nix6.buzz) as `.glb` files and rendered inline with `<model-viewer>`. Drag to orbit, scroll to zoom.
 
 <Tip>
-  Click and drag any model to rotate. Scroll to zoom. Double-click to reset the view.
+  Click and drag any model to rotate. Scroll to zoom. Auto-rotate is enabled by default.
 </Tip>
 
-## Neon Skull
-
-Goth / cyberpunk. For the after-hours side of 2AM™.
-
-<iframe title="Neon Skull" src="https://sketchfab.com/models/df41b58a20cd4e60b9e6ff62f9970d9f/embed?autostart=1&ui_theme=dark" width="100%" height="480" frameBorder="0" allow="autoplay; fullscreen; xr-spatial-tracking" allowFullScreen style={{borderRadius:"12px"}} />
-
-## Crystal Geode
-
-Luxury / tech. For iBank™, iMoney, and the higher-shelf brands.
-
-<iframe title="Crystal Geode" src="https://sketchfab.com/models/8a2f5e0a2f1c4c1d9a1a2f0c8e9c4d0b/embed?autostart=1&ui_theme=dark" width="100%" height="480" frameBorder="0" allow="autoplay; fullscreen; xr-spatial-tracking" allowFullScreen style={{borderRadius:"12px"}} />
-
-## Chrome Orb
-
-Abstract / minimal. For UTO™ Core surfaces.
-
-<iframe title="Chrome Orb" src="https://sketchfab.com/models/6e5c8ff85fce4b0d9c7e8a5b3c2d1e0f/embed?autostart=1&ui_theme=dark" width="100%" height="480" frameBorder="0" allow="autoplay; fullscreen; xr-spatial-tracking" allowFullScreen style={{borderRadius:"12px"}} />
+<script type="module" src="https://ajax.googleapis.com/ajax/libs/model-viewer/3.5.0/model-viewer.min.js" />
 
 ## Vintage Boombox
 
-Music tie-in for Grapify® and the Spotify® pre-release program.
+Music tie-in for Grapify® and the Spotify® pre-release program. Live from [Nix6 · BoomBox](https://3dc.nix6.buzz/m/boombox).
 
-<iframe title="Vintage Boombox" src="https://sketchfab.com/models/9c0a5fce8b5e4d7a9b3c1d2e0f4a5b6c/embed?autostart=1&ui_theme=dark" width="100%" height="480" frameBorder="0" allow="autoplay; fullscreen; xr-spatial-tracking" allowFullScreen style={{borderRadius:"12px"}} />
+<model-viewer src="https://3dc.nix6.buzz/__l5e/assets-v1/e590addf-f3cc-449a-a6f9-67f553b23494/boombox.glb" alt="Nix6 BoomBox 3D model" camera-controls auto-rotate shadow-intensity="1" environment-image="neutral" style={{width:"100%",height:"480px",borderRadius:"12px",background:"linear-gradient(135deg,#0c0c0c,#1a0a20)"}} />
 
-## Retro CRT TV
+## Other Nix6 Assets
 
-Broadcast tie-in for DopeTV®⁺ and ComTV®⁺.
+Additional models from the Nix6 catalog. Tap through to view live on 3dc.nix6.buzz.
 
-<iframe title="Retro CRT TV" src="https://sketchfab.com/models/2b3c4d5e6f7a8b9c0d1e2f3a4b5c6d7e/embed?autostart=1&ui_theme=dark" width="100%" height="480" frameBorder="0" allow="autoplay; fullscreen; xr-spatial-tracking" allowFullScreen style={{borderRadius:"12px"}} />
+<CardGroup cols={3}>
+  <Card title="Low-Poly Fox" icon="paw" href="https://3dc.nix6.buzz/m/low-poly-fox">
+    Animals · CC0 · 159 KB
+  </Card>
 
-<Warning>
-  These Sketchfab model IDs are placeholders. Any that do not resolve will show a Sketchfab error frame. Replace each `src` with a real Sketchfab model URL from your account (Model page → **Embed** → copy iframe `src`).
-</Warning>
+  <Card title="Rubber Duck" icon="cube" href="https://3dc.nix6.buzz/m/rubber-duck">
+    Props · CC0 · 118 KB
+  </Card>
+
+  <Card title="Avocado" icon="apple-whole" href="https://3dc.nix6.buzz/m/avocado">
+    Props · CC0 · 7.7 MB
+  </Card>
+
+  <Card title="BrainStem Robot" icon="robot" href="https://3dc.nix6.buzz/m/brainstem-robot">
+    Characters · CC0 · 3.0 MB
+  </Card>
+
+  <Card title="Rigged Figure" icon="person" href="https://3dc.nix6.buzz/m/rigged-figure">
+    Characters · CC0 · 49 KB
+  </Card>
+
+  <Card title="Browse full catalog" icon="grid-2" href="https://3dc.nix6.buzz">
+    All 6 assets on Nix6.
+  </Card>
+</CardGroup>
+
+## Requested but not yet in catalog
+
+The following brandspike slots are reserved. They will render as live 3D once matching `.glb` assets are uploaded to Nix6 (or another host):
+
+- **Neon Skull** — Goth / cyberpunk. For the after-hours side of 2AM™.
+- **Crystal Geode** — Luxury / tech. For iBank™, iMoney, and the higher-shelf brands.
+- **Chrome Orb** — Abstract / minimal. For UTO™ Core surfaces.
+- **Retro CRT TV** — Broadcast tie-in for DopeTV®⁺ and ComTV®⁺.
+- **UFO / Antigravity Craft** — Spaceship / antigravity tie-in for spaceship.com and the UFOᐩᐩ line.
+
+<Note>
+  To add a live model to any slot: upload the `.glb` to [3dc.nix6.buzz/upload](https://3dc.nix6.buzz/upload), then share the `Download .glb` URL from the model page and it can be wired into this gallery.
+</Note>
 
 ## See also
 
 - [About 2AM](/about) — partners and Grapify® pre-release embed
 - [Database of Links](/reference/database-of-links) — full brand directory
+- [Partner Stack](/reference/partner-stack) — Wix, Stripe, hardware, and spatial partners
