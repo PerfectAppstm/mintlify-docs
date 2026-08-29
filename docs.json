@@ -128,5 +128,10 @@
   },
   "styling": {
     "latex": true
+  },
+  "logo": {
+    "light": "/images/EyeSize_P_mask.png",
+    "dark": "/images/EyeWidth_mask.png",
+    "href": "https://www.image2url.com/r2/default/images/1788003900680-f37499b7-cce8-4075-b850-b1f2712942c6.png"
   }
 }
