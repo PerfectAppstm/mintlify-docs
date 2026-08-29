@@ -12,7 +12,13 @@
     "primary": {
       "type": "github",
       "href": "https://github.com/2amtech"
-    }
+    },
+    "links": [
+      {
+        "href": "/utotm",
+        "label": "https://www.uto.ventures"
+      }
+    ]
   },
   "navigation": {
     "tabs": [
@@ -156,6 +162,15 @@
     "body": {
       "family": "Roboto",
       "weight": 400
+    }
+  },
+  "banner": {
+    "content": "Close-Loop << { #System // #Run } >>",
+    "dismissible": true,
+    "type": "warning",
+    "color": {
+      "light": "#a3a615",
+      "dark": "#b37c0a"
     }
   }
 }
