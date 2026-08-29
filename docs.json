@@ -174,11 +174,11 @@
   },
   "fonts": {
     "heading": {
-      "family": "Geist",
-      "weight": 500
+      "family": "Orbitron",
+      "weight": 900
     },
     "body": {
-      "family": "Roboto",
+      "family": "Space Mono",
       "weight": 400
     }
   },
