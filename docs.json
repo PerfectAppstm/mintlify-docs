@@ -172,5 +172,10 @@
       "light": "#a3a615",
       "dark": "#b37c0a"
     }
+  },
+  "thumbnails": {
+    "fonts": {
+      "family": "Inter"
+    }
   }
 }
