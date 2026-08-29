@@ -15,8 +15,12 @@
     },
     "links": [
       {
-        "href": "/utotm",
-        "label": "https://www.uto.ventures"
+        "href": "https://www.uto.ventures",
+        "label": "UTO™"
+      },
+      {
+        "href": "https://www.2am.buzz",
+        "label": "2AM™"
       }
     ]
   },
