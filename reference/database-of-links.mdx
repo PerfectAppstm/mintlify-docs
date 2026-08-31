@@ -582,6 +582,87 @@ Curated links from the founder's active bookmark stack. Grouped by function.
 - [AI Plus Store](https://aiplusstore.com/)
 - [Hyperice](https://hyperice.com/)
 
+## NoSilos Crate
+
+Nosilos™ (led by Matthew Shultheis) is 2AM's PlanetScale-backed DoD (Definition of Done) web app scaffold. Full-stack template combining PlanetScale MySQL \+ Drizzle ORM \+ tRPC \+ React 19 \+ Tailwind 4 \+ shadcn/ui, wired for Manus OAuth and the extended UpQuest module system.
+
+<CardGroup cols={2}>
+  <Card title="PlanetScale" icon="database" href="https://planetscale.com/">
+    Backend of Definition (BoD) MySQL platform powering NoSilos schema.
+  </Card>
+
+  <Card title="Drizzle ORM" icon="layer-group" href="https://orm.drizzle.team/">
+    Type-safe schema \+ migrations (`drizzle-kit generate && migrate`).
+  </Card>
+
+  <Card title="tRPC v11" icon="bolt" href="https://trpc.io/">
+    End-to-end typesafe API layer (`auth`, `system`, feature routers).
+  </Card>
+
+  <Card title="React 19 + Vite 7" icon="react" href="https://react.dev/">
+    Client stack with wouter routing and TanStack Query.
+  </Card>
+
+  <Card title="Tailwind 4 + shadcn/ui" icon="palette" href="https://ui.shadcn.com/">
+    New-York style, neutral base, CSS variables, Radix primitives.
+  </Card>
+
+  <Card title="Manus Runtime" icon="cloud" href="https://manus.im/">
+    Purgaset Alaykum's Cloud Computer — OAuth \+ debug collector plugin.
+  </Card>
+</CardGroup>
+
+### Core Tables (PlanetScale)
+
+- `users` — Manus OAuth `openId`, `role` (user/admin), timestamps
+- `modules` — U#CORE module catalog
+- `user_modules` — favorites, last accessed, per-user personalization
+- `sessions` — auth session tracking
+- `activity_logs` — audit trail
+- `quest_types` — extended UpQuest categories
+
+### UpQuest Extension (U#CORE 19–25)
+
+The 7 additional quest types beyond the original 18:
+
+| # | Quest | Duality |
+| --- | --- | --- |
+| 19 | Monitor | Stream // Defend |
+| 20 | Improve | Enhance // Mod |
+| 21 | Modify | Add // Subtract |
+| 22 | Test | Hypothesize // Run |
+| 23 | Market | Strategize // Send |
+| 24 | Measure | Intent // Change |
+| 25 | Expand | Conquest // Cluster |
+
+### Design System
+
+- Background: `#0a0a0c` (near-black)
+- Accent (primary): `#00ff55` (luminous green)
+- Accent (secondary): `#ff5500` (orange)
+- Animation: Framer Motion 12
+- Fonts: Kinetic Slice (futuristic) — pending
+
+### Dev Stack Notes
+
+<AccordionGroup>
+  <Accordion title="Package Manager">
+    pnpm 10.4.1 with patched `wouter@3.7.1` and `tailwindcss>nanoid` override to 3.3.7.
+  </Accordion>
+
+  <Accordion title="Auth Flow">
+    `useAuth()` hook \+ `startLogin()` from `@/const`. Never call `startLogin()` during render — it mints a one-time nonce cookie.
+  </Accordion>
+
+  <Accordion title="Build">
+    `vite build && esbuild server/_core/index.ts --platform=node --packages=external --bundle --format=esm`
+  </Accordion>
+
+  <Accordion title="Tests">
+    Vitest 2.1 in Node env, targets `server/**/*.test.ts`.
+  </Accordion>
+</AccordionGroup>
+
 ## UTO Board of Directors
 
 | Brand | Lead |
